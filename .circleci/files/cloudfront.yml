@@ -4,7 +4,7 @@ Description: >
 Parameters:
   WorkflowID:
     Description: Unique identifier.
-    Type: String
+    Type: udapeople-mustafa102
 
 
 Resources:
