@@ -18,7 +18,7 @@ commands:
             # Your code heres
             # delete cloudformation stacks
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-            aws s3 rm s3://mustafa102-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 rm s3://udapeople-mustafa102-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws cloudformation delete-stack --stack-name "mustafa102-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
 
   revert-migrations:
@@ -324,8 +324,8 @@ jobs:
             # Your code here
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-                # If you are using kvdb.io, generate the bucket ID "7fY5ruHLePaBMmBvGNsRkS" in your local terminal first
-                curl https://kvdb.io/7fY5ruHLePaBMmBvGNsRkS/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1' --insecure
+                # If you are using kvdb.io, generate the bucket ID "4Wka63AqoTHqb21bUQNxUz" in your local terminal first
+                curl https://kvdb.io/4Wka63AqoTHqb21bUQNxUz/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1' --insecure
             fi
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -393,7 +393,7 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist s3://udapeople-mustafa102-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: $CIRCLE_WORKFLOW_ID
