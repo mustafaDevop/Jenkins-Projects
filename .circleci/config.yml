@@ -214,14 +214,14 @@ jobs:
   deploy-infrastructure:
     docker:
       # Docker image here that supports AWS CLI
-      - image: amazon/aws-cli:2.0.30
+      - image: amazon/aws-cli
     steps:
       # Checkout code from git
       - checkout
       - run:
           name: Install tar utility
           command: |
-            yum install -y tar gzip
+            yum install  tar gzip -y
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -247,6 +247,7 @@ jobs:
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query "Reservations[*].Instances[*].PublicIpAddress" \
               --output text >> ~/project/.circleci/ansible/inventory.txt
+              cat ~/project/.circleci/ansible/inventory.txt      
       - persist_to_workspace:
           root: ~/
           paths:
@@ -258,14 +259,14 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: alpine:3.12.0
+      - image: python:3.10-alpine:3.16
     steps:
       # Checkout code from git
       - checkout
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints:
-            - "29:5f:46:41:c3:63:2f:43:dd:84:79:2d:2f:35:96:86"
+            - "23:27:cb:9c:bc:c3:bd:3d:11:b6:3a:cd:91:fa:32:8e"
       # attach workspace
       - run:
           name: Install tar utility
@@ -292,11 +293,14 @@ jobs:
           name: Configure server
           command: |
             # Your code here
-            printenv | grep TYPEORM_
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            pwd
+            cd .circleci/ansible
+            ls -al
+            ansible-playbook -i inventory.txt  configure-server.yml
+          no_output_timeout: 30m
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          workflow_id: $CIRCLE_WORKFLOW_ID
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   run-migrations:
     docker:
@@ -305,18 +309,15 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            # Your code here
-            cd backend
-            npm install
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
-            # Run and save the migration output
             cd backend
+            sudo npm install -g npm
             npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
       - run:
           name: Send migration results to KVDB.io
           command: |
