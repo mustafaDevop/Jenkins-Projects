@@ -318,14 +318,14 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-     - run:
+      - run:
           name: Run migrations
           command: |
             cd backend
             npm install
             npm run migrations > migrations_dump.txt
             cat migrations_dump.txt
-     - run:
+      - run:
           name: Send migration results to KVDB.io
           command: |
                 # Your code here
@@ -335,7 +335,7 @@ jobs:
                 curl https://kvdb.io/V2irXAbV4Tug9xuTH171yn/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1' 
               fi
       # Here's where you will add some code to rollback on failure
-     - destroy-environment:
+      - destroy-environment:
           workflow_id: {$CIRCLE_WORKFLOW_ID:0:7}
           revert-migrations:  {$CIRCLE_WORKFLOW_ID:0:7}
 
