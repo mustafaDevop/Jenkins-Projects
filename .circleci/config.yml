@@ -8,7 +8,8 @@ commands:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       # Add parameter here
-      udapeople
+      type: string
+      variable: pipeline.id
     steps:
       - run:
           name: Destroy environments
