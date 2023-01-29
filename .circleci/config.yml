@@ -254,7 +254,6 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   jobs:
-  ...
   configure-infrastructure:
     docker:
     - image: cimg/python:3.10
