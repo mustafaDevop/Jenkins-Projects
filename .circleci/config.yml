@@ -389,7 +389,7 @@ deploy-frontend:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  deploy-backend:
+deploy-backend:
     docker:
       # Docker image here that supports Ansible
       - image: python:3.10-alpine:3.12.0
