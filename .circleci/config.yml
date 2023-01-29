@@ -318,19 +318,15 @@ run-migrations:
     steps:
       # Checkout code from git
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            # Your code here
-            cd backend
-            npm install
-      - run:
-          name: Run migrations
-          command: |
-            # Run and save the migration output
-            cd backend
-            npm run migrations > migrations_dump.txt
-      - run:
+     - run:
+    name: Run migrations
+    command: |
+      cd backend
+      npm install
+      npm run migrations > migrations_dump.txt
+      cat migrations_dump.txt
+      
+    - run:
           name: Send migration results to KVDB.io
           command: |
             # Your code here
