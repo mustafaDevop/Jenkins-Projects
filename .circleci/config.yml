@@ -343,7 +343,7 @@ run-migrations:
       - destroy-environment:
           workflow_id: {$CIRCLE_WORKFLOW_ID:0:7}
 
-  deploy-frontend:
+deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
       - image: python:3.10
