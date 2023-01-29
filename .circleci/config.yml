@@ -311,7 +311,7 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-run-migrations:
+  run-migrations:
     docker:
       # Docker image here that supports NodeJS
       - image: python:3.10
@@ -319,29 +319,29 @@ run-migrations:
       # Checkout code from git
       - checkout
      - run:
-    name: Run migrations
-    command: |
-      cd backend
-      npm install
-      npm run migrations > migrations_dump.txt
-      cat migrations_dump.txt
-      
-    - run:
-          name: Send migration results to KVDB.io
+          name: Run migrations
           command: |
-            # Your code here
-            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-            then
+            cd backend
+            npm install
+            npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
+      
+     - run:
+            name: Send migration results to KVDB.io
+            command: |
+                # Your code here
+                if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+              then
                 # If you are using kvdb.io, generate the bucket ID "V2irXAbV4Tug9xuTH171yn" in your local terminal first
                 curl https://kvdb.io/V2irXAbV4Tug9xuTH171yn/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1' 
-            fi
+              fi
       # Here's where you will add some code to rollback on failure
-      - destroy-environment:
+     - destroy-environment:
           workflow_id: {$CIRCLE_WORKFLOW_ID:0:7}
           revert-migrations:  {$CIRCLE_WORKFLOW_ID:0:7}
 
 
-deploy-frontend:
+  deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
       - image: python:3.10
@@ -387,7 +387,7 @@ deploy-frontend:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-deploy-backend:
+  deploy-backend:
     docker:
       # Docker image here that supports Ansible
       - image: python:3.10-alpine:3.12.0
@@ -445,7 +445,7 @@ deploy-backend:
       - revert-migrations:
           workflow_id:  ${CIRCLE_WORKFLOW_ID:0:7}
 
-smoke-test:
+  smoke-test:
     docker:
       # Lightweight Docker image
       - image: python:3.10-alpine:3.16
@@ -506,7 +506,7 @@ smoke-test:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-cloudfront-update:
+  cloudfront-update:
     docker:
       # Docker image here that supports AWS CLI
       - image: amazon/aws-cli
@@ -527,7 +527,7 @@ cloudfront-update:
             echo $OldWorkflowID >> ~/project/OldWorkflowID.txt             
             cat ~/project/OldWorkflowID.txt
       
-cleanup:
+  cleanup:
     docker:
       # Docker image here
       - image: amazon/aws-cli
