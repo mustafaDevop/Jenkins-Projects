@@ -9,7 +9,7 @@ commands:
     parameters:
       workflow_id:
         type: string
-        default: ""
+        default: "udapeople"
     steps:
       - run:
           name: Destroy environments
