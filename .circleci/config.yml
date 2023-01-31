@@ -273,17 +273,14 @@ jobs:
         - image: cimg/python:3.10
     steps:
       - checkout
-      - install_ansible:
-          description: Install Ansible
-          steps:
-            - run:
-                name: Install Ansible
-                command: |
-                  python3 -m pip install --user ansible
-      - install_awscli:
-          description: Install AWS CLI v2
-          steps:
-            - run:
+      
+      
+      - run:
+                  name: Install Ansible
+                  command: |
+                    python3 -m pip install --user ansible
+      
+      - run:
                 name: Install AWS CLI v2
                 command: |
                   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
