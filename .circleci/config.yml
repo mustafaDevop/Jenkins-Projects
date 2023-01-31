@@ -281,10 +281,6 @@ jobs:
             - "23:27:cb:9c:bc:c3:bd:3d:11:b6:3a:cd:91:fa:32:8e"
       # attach workspace
       - run:
-          name: Install tar utility
-          command: |
-            apk add --update tar gzip
-      - run:
           name: Install python
           command: |
             # your code here
