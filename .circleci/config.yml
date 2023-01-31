@@ -460,7 +460,12 @@ jobs:
               export TYPEORM_MIGRATIONS_DIR=./migrations
               export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
               export TYPEORM_MIGRATIONS=./migrations/*.ts
-
+              export TYPEORM_CONNECTION=postgres
+              export TYPEORM_HOST=database-1.cxmkgnubnip1.us-west-2.rds.amazonaws.com
+              export TYPEORM_PORT=5432
+              export TYPEORM_USERNAME=postgres
+              export TYPEORM_PASSWORD=mustramadi
+              export TYPEORM_DATABASE=postgres
               cd .circleci/ansible
               cat inventory.txt
               ansible-playbook -i inventory.txt deploy-backend.yml
