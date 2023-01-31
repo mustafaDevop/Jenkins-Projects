@@ -316,7 +316,7 @@ jobs:
             unzip awscliv2.zip
             sudo ./aws/install
       - run:
-          name: Install Node.js 13.8.0
+          name: Install Node.js 18.0.0
           command: |
             # Install Node.js LTS version as our base Node.js version
             curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
@@ -324,7 +324,7 @@ jobs:
 
             # Use n version manager to use Node.js v13.8.0
             sudo npm install --global n
-            sudo n 13.8.0 
+            sudo n 18.0.0 
       - restore_cache:
           keys: [backend-build]
       - run:
