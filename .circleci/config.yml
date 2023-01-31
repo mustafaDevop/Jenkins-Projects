@@ -270,36 +270,36 @@ jobs:
 
   configure-infrastructure:
     docker:
-    - image: cimg/python:3.10
+        - image: cimg/python:3.10
     steps:
-    - checkout
-    - install_ansible:
-  description: Install Ansible
-  steps:
-    - run:
-        name: Install Ansible
-        command: |
-          python3 -m pip install --user ansible
-    - install_awscli:
-  description: Install AWS CLI v2
-  steps:
-    - run:
-        name: Install AWS CLI v2
-        command: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
-    - add_ssh_keys:
-       fingerprints: ["23:27:cb:9c:bc:c3:bd:3d:11:b6:3a:cd:91:fa:32:8e"]
-    - attach_workspace:
-        at: ~/
-    - run:
-       name: Run Configure Server Ansible play
-       command: |
-         cd .circleci/ansible
-         cat inventory.txt
+      - checkout
+      - install_ansible:
+          description: Install Ansible
+          steps:
+          - run:
+            name: Install Ansible
+            command: |
+                python3 -m pip install --user ansible
+      - install_awscli:
+          description: Install AWS CLI v2
+          steps:
+          - run:
+              name: Install AWS CLI v2
+              command: |
+                  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                  unzip awscliv2.zip
+                  sudo ./aws/install
+      - add_ssh_keys:
+          fingerprints: ["23:27:cb:9c:bc:c3:bd:3d:11:b6:3a:cd:91:fa:32:8e"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run Configure Server Ansible play
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
 
-         ansible-playbook -i inventory.txt configure-server.yml    
+            ansible-playbook -i inventory.txt configure-server.yml    
    # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
