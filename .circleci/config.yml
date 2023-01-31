@@ -405,10 +405,34 @@ jobs:
   deploy-backend:
     docker:
       # Docker image here that supports Ansible
-      - image: python:3.10-alpine:3.12.0
+      - image: cimg/python:3.10
     steps:
       # Checkout code from git
       - checkout
+      - run:
+                  name: Install Ansible
+                  command: |
+                    python3 -m pip install --user ansible
+      
+      - run:
+                name: Install AWS CLI v2
+                command: |
+                  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                  unzip awscliv2.zip
+                  sudo ./aws/install
+      - run:
+          name: Install Node.js 18.0.0
+          command: |
+            # Install Node.js LTS version as our base Node.js version
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            
+            # Use n version manager to use Node.js v18.0.0
+            sudo npm install --global n
+            sudo n 18.0.0
+      - restore_cache:
+            keys: [backend-deps]      
+      
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints:
@@ -419,41 +443,27 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
-            apk add --update --no-cache ansible tar gzip nodejs npm curl aws-cli
+              cd backend
+              npm install
+      - run:
+          name: Package Backend
+          command: |
+              cd backend
+              npm run build
+              tar -czf artifact.tar.gz dist/* package*
+
+              cd ..
+              cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files        
       - run:
           name: Deploy backend
           command: |
-            # your code here
-            pwd
-            cd backend
-            
-            touch .env
-            echo ENVIRONMENT=production > ".env"
-            echo TYPEORM_CONNECTION=postgres >> ".env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> ".env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
-            echo NODE_ENV=production >> ".env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
-            
-            pwd
-            ls -al
-            npm install
-            npm run build
-            cd ..
-            # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
-            
-            cd .circleci/ansible
-            
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml
+              export TYPEORM_MIGRATIONS_DIR=./migrations
+              export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+              export TYPEORM_MIGRATIONS=./migrations/*.ts
+
+              cd .circleci/ansible
+              cat inventory.txt
+              ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
