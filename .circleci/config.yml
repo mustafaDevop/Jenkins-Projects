@@ -346,51 +346,68 @@ jobs:
   deploy-frontend:
     docker:
       # Docker image here that supports AWS CLI
-      - image: cimg/python:3.10
+      - image: alpine:3.12.0
     steps:
       # Checkout code from git
       - checkout
       - run:
-          name: Install AWS CLI v2
-          command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-      - run:
-          name: Install Node.js 13.8.0
-          command: |
-            # Install Node.js LTS version as our base Node.js version
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-            sudo apt install -y nodejs
-            # Use n version manager to use Node.js v13.8.0
-            sudo npm install --global n
-            sudo n 13.8.0
-      - restore_cache:
-            keys: [backend-deps]
-      - run:
           name: Install dependencies
           command: |
-              cd frontend
-              npm install      
+            # your code here
+            apk update
+      # install python
+      - run:
+          name: Install python
+          command: |
+            # your code here
+            apk add --update python3
+      # install ansible
+      - run:
+          name: Install ansible
+          command: |
+            # your code here
+            apk add --update ansible
+      # install NodeJS and NPM
+      - run:
+          name: Install NodeJS and NPM
+          command: |
+            # your code here
+            apk add nodejs-current npm
+            node --version
+            npm --version
+      # install aws cli
+      - run:
+          name: Install aws cli
+          command: |
+            # your code here
+            apk add --no-cache aws-cli
+      - run:
+          name: Install tar utility
+          command: |
+            apk add --update tar gzip
       - run:
           name: Get backend url
           command: |
-              BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+            # your code here
+            export BACKEND_IP=$(aws ec2 describe-instances \
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --query "Reservations[*].Instances[*].PublicIpAddress" \
               --output text)
-              echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
-              cat frontend/.env
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
       - run:
           name: Deploy frontend objects
           command: |
-              cd frontend
-              npm run build
-              aws s3 cp dist s3://udapeople-Backend-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            # your code here
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-backend:
