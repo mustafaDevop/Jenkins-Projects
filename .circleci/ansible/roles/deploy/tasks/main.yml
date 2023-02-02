@@ -6,10 +6,10 @@
     state: directory
 
 - name: "Unarchive backend files"
-  become: true
   unarchive:
     src: artifact.tar.gz
     dest: ~/backend-app
+  become: true
 
 - name: "Installing Node Dependencies"
   become: true
