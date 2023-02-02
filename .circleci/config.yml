@@ -466,7 +466,6 @@ jobs:
               tar -C backend -czvf artifact.tar.gz .
               cd .circleci/ansible
               echo "Contents of the inventory.txt  file is --------"
-
               cat inventory.txt
               printenv | grep TYPEORM_
               ansible-playbook -i inventory.txt deploy-backend.yml 
