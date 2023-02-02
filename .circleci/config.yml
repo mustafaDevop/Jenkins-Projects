@@ -460,7 +460,6 @@ jobs:
               # Your code here
               
               cd .circleci/ansible
-              cat inventory.txt
               printenv | grep TYPEORM_
               ansible-playbook -i inventory.txt deploy-backend.yml 
       # Here's where you will add some code to rollback on failure
