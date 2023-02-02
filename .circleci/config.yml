@@ -273,19 +273,16 @@ jobs:
         - image: cimg/python:3.10
     steps:
       - checkout
-      
-      
       - run:
-                  name: Install Ansible
-                  command: |
-                    python3 -m pip install --user ansible
-      
+        name: Install Ansible
+        command: |
+          python3 -m pip install --user ansible
       - run:
-                name: Install AWS CLI v2
-                command: |
-                  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                  unzip awscliv2.zip
-                  sudo ./aws/install
+          name: Install AWS CLI v2
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - add_ssh_keys:
           fingerprints: ["23:27:cb:9c:bc:c3:bd:3d:11:b6:3a:cd:91:fa:32:8e"]
       - attach_workspace:
@@ -295,7 +292,6 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
-
             ansible-playbook -i inventory.txt configure-server.yml    
    # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -346,8 +342,6 @@ jobs:
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          
-
 
   deploy-frontend:
     docker:
@@ -356,7 +350,6 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      
       - run:
           name: Install AWS CLI v2
           command: |
@@ -369,7 +362,6 @@ jobs:
             # Install Node.js LTS version as our base Node.js version
             curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
             sudo apt install -y nodejs
-
             # Use n version manager to use Node.js v13.8.0
             sudo npm install --global n
             sudo n 13.8.0
@@ -387,7 +379,6 @@ jobs:
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
-
               echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
               cat frontend/.env
       - run:
@@ -402,69 +393,72 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  deploy-backend:
+deploy-backend:
     docker:
       # Docker image here that supports Ansible
-      - image: cimg/python:3.10
+      - image: alpine:3.12.0
     steps:
       # Checkout code from git
       - checkout
-      - run:
-                  name: Install Ansible
-                  command: |
-                    python3 -m pip install --user ansible
-      
-      - run:
-                name: Install AWS CLI v2
-                command: |
-                  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                  unzip awscliv2.zip
-                  sudo ./aws/install
-      - run:
-          name: Install Node.js 13.8.0
-          command: |
-            # Install Node.js LTS version as our base Node.js version
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-            sudo apt install -y nodejs
-            
-            # Use n version manager to use Node.js v13.8.0
-            sudo npm install --global n
-            sudo n 13.8.0
-      - restore_cache:
-            keys: [backend-deps]      
-      
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints:
             - "23:27:cb:9c:bc:c3:bd:3d:11:b6:3a:cd:91:fa:32:8e"
+      - run:
+          name: Install dependencies
+          command: |
+            # your code here
+            apk update
+      - run:
+          name: Install tar utility
+          command: |
+            apk add --update tar gzip
       # attach workspace
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies
+          name: Install python
           command: |
-              cd backend
-              npm install
+            # your code here
+            apk add --update python3
+      # install ansible
       - run:
-           name: Deploy backend 
-           command: | 
-             # your code here 
-             cd backend 
-             npm i 
-             npm run build 
-             cd .. 
-             # Zip the directory 
-             tar -C backend -czvf artifact.tar.gz . 
-             cd .circleci/ansible 
-             echo "Contents  of the inventory.txt file is -------" 
-             cat inventory.txt 
-             printenv | grep TYPEORM_ 
-             ansible-playbook -i inventory.txt deploy-backend.yml 
+          name: Install ansible
+          command: |
+            # your code here
+            apk add --update ansible
+      # install NodeJS and NPM
+      - run:
+          name: Install NodeJS and NPM
+          command: |
+            # your code here
+            apk add nodejs-current npm
+            node --version
+            npm --version
+      # install aws cli
+      - run:
+          name: Install aws cli
+          command: |
+            # your code here
+            apk add --no-cache aws-cli
+      - run:
+          name: Deploy backend
+          command: |
+            # your code here
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            printenv | grep TYPEORM_
+            ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
-          workflow_id:  ${CIRCLE_WORKFLOW_ID:0:7}
+          workflow_id: $CIRCLE_WORKFLOW_ID
 
   smoke-test:
     docker:
