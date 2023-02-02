@@ -4,10 +4,10 @@
    command: mkdir backend 
   
  - name: "Unarchive backend files"
-  become: true
-  unarchive:
-    src: artifact.tar.gz
-    dest: ~/backend-app 
+   become: true
+   unarchive:
+     src: artifact.tar.gz
+     dest: ~/backend-app 
   
  - name: "Unzip files as backend folder" 
    command: tar -xzf artifact.tar.gz 
