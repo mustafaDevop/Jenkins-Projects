@@ -274,9 +274,9 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Install Ansible
-        command: |
-          python3 -m pip install --user ansible
+          name: Install Ansible
+          command: |
+            python3 -m pip install --user ansible
       - run:
           name: Install AWS CLI v2
           command: |
@@ -393,7 +393,7 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-deploy-backend:
+  deploy-backend:
     docker:
       # Docker image here that supports Ansible
       - image: alpine:3.12.0
@@ -458,7 +458,7 @@ deploy-backend:
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          workflow_id: $CIRCLE_WORKFLOW_ID
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
