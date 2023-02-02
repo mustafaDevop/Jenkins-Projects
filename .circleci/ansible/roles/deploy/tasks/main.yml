@@ -3,9 +3,9 @@
    become: true 
    command: mkdir backend 
   
- - name: "Copy files to server" 
+ - name: "Unarchive backend files" 
    become: true 
-   copy:
+   unarchive:
         src: "~/project/artifact.tar.gz"
         dest: "/home/ubuntu/backend/artifact.tar.gz" 
   
