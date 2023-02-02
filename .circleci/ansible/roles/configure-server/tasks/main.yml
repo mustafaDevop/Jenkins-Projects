@@ -14,7 +14,7 @@
 
 # Install npm
 - name: install npm
-   shell: |
+  shell: |
      sudo apt install libssl1.0-dev -y
      sudo apt install nodejs-dev -y
      sudo apt install node-gyp -y
