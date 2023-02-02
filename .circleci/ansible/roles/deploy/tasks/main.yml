@@ -1,7 +1,7 @@
 --- 
- - name: "Make backend directory"
-   become: true
-   command: mkdir backend
+ - name: "Make backend directory"
+   become: true
+   command: mkdir backend
    
  - name: "Unarchive backend files"
    become: true
@@ -9,19 +9,20 @@
      src: artifact.tar.gz
      dest: ~/backend-app
   
- - name: "Unzip files as backend folder"
-   command: tar -xzf artifact.tar.gz
-   become: true
-   args:
-     chdir: /home/ubuntu/backend
-  
- - name: "Install dependencies"
-   command: npm install
-   become: true
-   args:
-     chdir: /home/ubuntu/backend
-  
- - name: "Run the app with PM2"
-   command: pm2 start npm -- start
-   args:
-     chdir: /home/ubuntu/backend
+ - name: "Unzip files as backend folder"
+   become: true
+   command: tar -xzf artifact.tar.gz
+   args:
+    chdir: /home/ubuntu/backend
+    
+ - name: "Install dependencies"
+   become: true
+   command: npm install
+   args:
+    chdir: /home/ubuntu/backend
+    
+ - name: "Run the app with PM2"
+   become: true
+   command: pm2 start npm -- start
+   args:
+    chdir: /home/ubuntu/backend
