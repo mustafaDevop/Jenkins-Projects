@@ -2,3 +2,4 @@
 [URL02]=http://udapeople-8be8520.s3-website-us-west-2.amazonaws.com/#/employees
 [URL03]=http://35.160.142.101:3030/api/status
 [URL04]=https://d8emj13lwr2j6.cloudfront.net/#/employees
+[URL05]http://ec2-35-91-237-224.us-west-2.compute.amazonaws.com:9100/
