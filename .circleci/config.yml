@@ -541,7 +541,7 @@ jobs:
   cloudfront-update:
     docker:
       # Docker image here that supports AWS CLI
-      - image: amazon/aws-cli
+      - image: alpine:3.12.0
     steps:
       # Checkout code from git
       - checkout
@@ -549,20 +549,30 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            yum install tar gzip -y
+            apk update
+            apk add --update python3
+            apk add --no-cache aws-cli
       - run:
-          name: Get old stack workflow id
+          name: Update cloudfront distribution
           command: |
-            export OldWorkflowID=$(aws cloudformation \               
-              list-exports ---query "Exports[?Name==\'WorkflowID\'].Value" \               
-              --no-paginate --output text | grep -o '[^-]*$')             
-            echo $OldWorkflowID >> ~/project/OldWorkflowID.txt             
-            cat ~/project/OldWorkflowID.txt
-      
+            # your code here
+            # Change the initial stack name, as applicable to you
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople \
+      # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          workflow_id: $CIRCLE_WORKFLOW_ID
+      - revert-migrations:
+          workflow_id: $CIRCLE_WORKFLOW_ID
+
   cleanup:
     docker:
       # Docker image here
-      - image: amazon/aws-cli
+      # Using Ubuntu because it works with complex commands on bash
+      - image: ubuntu:18.04
     steps:
       # Checkout code from git
       - checkout
@@ -570,32 +580,29 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            yum install tar gzip -y
-      - attach_workspace:
-          at: ~/
+            apt update
+            apt install -y python3-pip
+            pip3 install awscli
       - run:
           name: Get old stack workflow id
           command: |
             # your code here
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                 --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            echo Stack names: "${STACKS[@]}"
-            cat ~/project/OldWorkflowID.txt
-            export OldWorkflowID=$(cat ~/project/OldWorkflowID.txt)
+            export OldWorkflowID=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+            --no-paginate --output text)
             echo OldWorkflowID: "${OldWorkflowID}"
-      - run:
-          name: Remove old stack workflow id
-          command:  |
-            export OldWorkflowID=$(cat ~/project/OldWorkflowID.txt)
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${oldWorkflowID}" ]]
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"  
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            echo Stack names: "${STACKS[@]}"
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+            echo Stack names: "${STACKS[@]}"
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
-              echo "Deleting old stack"
-              echo "s3://udapeople-mustafa102-${OldWorkflowID}"
-              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive || true
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}" || true
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}" || true
-            else
-              echo "stack is the latest"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
            
 
