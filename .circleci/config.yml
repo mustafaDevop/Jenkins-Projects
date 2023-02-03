@@ -480,7 +480,7 @@ jobs:
   smoke-test:
     docker:
       # Lightweight Docker image
-      - image: python:3.10-alpine:3.16
+      - image: alpine:3.16
     steps:
       # Checkout code from git
       - checkout
