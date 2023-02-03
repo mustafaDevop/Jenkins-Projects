@@ -1,4 +1,4 @@
 [URL01]=https://github.com/mustafaDevop/CI-CD
-[URL02]=http://udapeople-161b728.s3-website-us-west-2.amazonaws.com/#/employees
-[URL03]=http://35.91.221.28:3030/api/status
-[URL04]=https://d1pkt6s7or30q5.cloudfront.net/#/employees
+[URL02]=http://udapeople-8be8520.s3-website-us-west-2.amazonaws.com/#/employees
+[URL03]=http://35.160.142.101:3030/api/status
+[URL04]=https://d8emj13lwr2j6.cloudfront.net/#/employees
