@@ -1,0 +1,24 @@
+/***********************
+* Variable
+***********************/
+:root{
+	--thm-primary: #2dcd7c;
+	--thm-primary-rgb: 45, 205, 124;
+	--thm-secondary: #9cb7bd;
+	--thm-secondary-rgb: 156, 183, 189;
+	--thm-white: #ffffff;
+	--thm-white-rgb: 255, 255, 255;
+	--thm-gray:	#838e91;
+	--thm-gray-rgb: 131, 142, 145;
+	--thm-border: #e1e8ea;
+	--thm-border-rgb: 225,232, 234;
+	--thm-black: #003b49;
+	--thm-black-rgb: 0, 59, 73;
+	--thm-dark-black: #01313c;
+	--thm-dark-black-rgb: 1, 49, 60;
+	--thm-light-bg: #f3f6f7;
+	--thm-light-bg-rgb: 243, 246, 247;
+	--thm-font: "Manrope",sans-serif;
+	--thm-special-font: "reeyregular", sans-serif;
+	scroll-behavior: auto;
+}
