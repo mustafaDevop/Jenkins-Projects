@@ -1,6 +1,6 @@
 # hello-world
 
->**Before you proceed:** Fork this repository and set it up as a project in [CircleCI](https://app.circleci.com/projects/) dashboard. Feel free to submit PRs if you find any improvements. 
+>**Before you proceed:** Fork this repository and set it up as a project in [Jenkins](https://www.jenkins.io/) dashboard. Feel free to submit PRs if you find any improvements. 
 
 
 Here is the list of files and corresponding exercises. 
@@ -74,8 +74,7 @@ Files relevant for this exercise are:
 Files relevant for this exercise are:
 ```bash
 └── template.yml            # Change the KeyName property value, as applicable to you
-└── .circleci
-    └── config.yml          # Look for the create_infrastructure Job
+└── Jenkinsfile          # Look for the create_infrastructure Job
 ```
 
 
@@ -87,16 +86,14 @@ Files relevant for this exercise are:
 Files relevant for this exercise are:
 ```bash        
 ├── ansible.cfg             
-└── .circleci
-    └── config.yml          # Look for the configure_infrastructure Job
+└── Jenkinsfile          # Look for the configure_infrastructure Job
 ```
 
 
 ### 5. Exercise: Smoke Testing
 Files relevant for this exercise are:
 ```bash           
-└── .circleci
-    └── config.yml          # Look for the smoke_test Job
+└── Jenkinsfile          # Look for the smoke_test Job
 ```
 
 
@@ -104,8 +101,7 @@ Files relevant for this exercise are:
 Files relevant for this exercise are:
 ```bash    
 └── template.yml            # Change the KeyName property value, as applicable to you       
-└── .circleci
-    └── config.yml          # Look for the create_infrastructure Job and destroy_environment command. 
+└── Jenkinsfile          # Look for the create_infrastructure Job and destroy_environment command. 
 ```
 
 
@@ -127,6 +123,5 @@ Files relevant for this exercise are:
 ├── error.html
 ├── index.html  
 # Four Jobs: create_and_deploy_front_end, get_last_deployment_id, promote_to_production, and clean_up_old_front_end
-└── .circleci
-    └── config.yml
+└── .Jenkinsfile
 ```
