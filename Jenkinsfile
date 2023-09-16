@@ -313,6 +313,7 @@ pipeline {
                         sh('ssh -o StrictHostKeyChecking=no -i ${KEY_FILE_DEST} ${env.REMOTE_USER}@${env.REMOTE_SERVER_IP} "cd ${DEST_FILE_PATH}${CONTAINER_NAME} cd backend && npm i && npm build && cd .. && tar -C backend -czvf artifact.tar.gz . && cd .circleci/ansible && echo "Content of the inventory.txt file is -------" && cat inventory.txt && printenv | grep TYPEORM_ && ansible-playbook -i  inventory.txt deploy-bakend.yml')
 
                     }
+                }
             }
         }
 //       stage('Smoke-test') {
