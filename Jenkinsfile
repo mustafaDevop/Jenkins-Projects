@@ -16,7 +16,7 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 checkout scm
-                sh " sudo chmod +x install.sh $$ ./install.sh"
+                sh " sudo chmod +x install.sh && ./install.sh"
                     
             }
         }
