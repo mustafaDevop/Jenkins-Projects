@@ -1,0 +1,25 @@
+// Note this is a project is still on process
+pipeline {
+    agent any
+
+
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install dependencies') {
+            steps {
+                checkout scm
+                sh "sudo chmod +x docker.sh && ./docker.sh "
+            }
+        }
+        stage('Test build') {
+            steps {
+                checkout scm
+                sh "docker build -t jquery ."
+            }
+        }
+    }
+}
